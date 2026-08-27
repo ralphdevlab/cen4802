@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Disney Watchlist</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; }
+        h1 { text-align: center; }
+        li { padding: 6px 0; }
+        .watched { color: green; font-weight: bold; }
+        .unwatched { color: gray; }
+        form.inline { display: inline; }
+    </style>
+</head>
+<body>
+
+<h1>🏰 Disney Movie Watchlist</h1>
+
+<form th:action="@{/movies/add}" method="post">
+    <input type="text" name="title" placeholder="Add a new movie..." required />
+    <button type="submit">Add</button>
+</form>
+
+<hr/>
+
+<ul>
+    <li th:each="movie : ${movies}">
+        <span th:classappend="${movie.watched} ? 'watched' : 'unwatched'"
+              th:text="${movie.title}">
+        </span>
+
+        <form class="inline" th:action="@{/movies/toggle/{id}(id=${movie.id})}" method="post">
+            <button type="submit"
+                    th:text="${movie.watched} ? 'Mark Unwatched' : 'Mark Watched'">
+            </button>
+        </form>
+    </li>
+</ul>
+
+</body>
+</html>
