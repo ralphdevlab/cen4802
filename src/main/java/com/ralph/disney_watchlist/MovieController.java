@@ -16,9 +16,17 @@ public class MovieController {
     private MovieRepository movieRepository;
 
     @GetMapping("/movies")
-    public String listMovies(Model model) {
-        List<Movie> movies = movieRepository.findAll();
+    public String listMovies(@RequestParam(required = false) String search, Model model) {
+        List<Movie> movies;
+
+        if (search != null && !search.isBlank()) {
+            movies = movieRepository.findByTitleContainingIgnoreCase(search);
+        } else {
+            movies = movieRepository.findAll();
+        }
+
         model.addAttribute("movies", movies);
+        model.addAttribute("search", search);
         return "movies";
     }
 
