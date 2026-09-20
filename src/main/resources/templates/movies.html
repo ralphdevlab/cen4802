@@ -15,6 +15,7 @@
 <body>
 
 <h1>🏰 Ralph's Disney Movie Watchlist</h1>
+<p th:text="'Showing ' + ${movieCount} + ' movies'"></p>
 
 <form th:action="@{/movies}" method="get">
     <input type="text" name="search" placeholder="Search by title..." th:value="${search}" />

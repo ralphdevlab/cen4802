@@ -27,6 +27,7 @@ public class MovieController {
 
         model.addAttribute("movies", movies);
         model.addAttribute("search", search);
+        model.addAttribute("movieCount", movies.size());
         return "movies";
     }
 
