@@ -25,8 +25,7 @@ public class MovieController {
         if (filter.equals("watched")) {
             movies = hasSearch
                     ? movieRepository.findByTitleContainingIgnoreCaseAndWatched(search, true)
-                    // after bug
-                    : movieRepository.findByWatched(false);
+                    : movieRepository.findByWatched(true);
         } else if (filter.equals("unwatched")) {
             movies = hasSearch
                     ? movieRepository.findByTitleContainingIgnoreCaseAndWatched(search, false)
