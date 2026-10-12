@@ -10,6 +10,7 @@
         .watched { color: green; font-weight: bold; }
         .unwatched { color: gray; }
         form.inline { display: inline; }
+        .active { font-weight: bold; text-decoration: none; color: black; }
     </style>
 </head>
 <body>
@@ -17,8 +18,16 @@
 <h1>🏰 Ralph's Disney Movie Watchlist</h1>
 <p th:text="'Showing ' + ${movieCount} + ' movies (now running in Docker)'"></p>
 
+<p>
+    Filter:
+    <a th:href="@{/movies(filter='all')}" th:classappend="${filter == 'all'} ? 'active'">All</a> |
+    <a th:href="@{/movies(filter='watched')}" th:classappend="${filter == 'watched'} ? 'active'">Watched</a> |
+    <a th:href="@{/movies(filter='unwatched')}" th:classappend="${filter == 'unwatched'} ? 'active'">Unwatched</a>
+</p>
+
 <form th:action="@{/movies}" method="get">
     <input type="text" name="search" placeholder="Search by title..." th:value="${search}" />
+    <input type="hidden" name="filter" th:value="${filter}" />
     <button type="submit">Search</button>
     <a th:href="@{/movies}"><button type="button">Clear</button></a>
 </form>
@@ -37,6 +46,7 @@
         </span>
 
         <form class="inline" th:action="@{/movies/toggle/{id}(id=${movie.id})}" method="post">
+            <input type="hidden" name="filter" th:value="${filter}" />
             <button type="submit"
                     th:text="${movie.watched} ? 'Mark Unwatched' : 'Mark Watched'">
             </button>

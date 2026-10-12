@@ -16,27 +16,41 @@ public class MovieController {
     private MovieRepository movieRepository;
 
     @GetMapping("/movies")
-    public String listMovies(@RequestParam(required = false) String search, Model model) {
+    public String listMovies(@RequestParam(required = false) String search,
+                             @RequestParam(required = false, defaultValue = "all") String filter,
+                             Model model) {
+        boolean hasSearch = search != null && !search.isBlank();
         List<Movie> movies;
 
-        if (search != null && !search.isBlank()) {
-            movies = movieRepository.findByTitleContainingIgnoreCase(search);
+        if (filter.equals("watched")) {
+            movies = hasSearch
+                    ? movieRepository.findByTitleContainingIgnoreCaseAndWatched(search, true)
+                    : movieRepository.findByWatched(true);
+        } else if (filter.equals("unwatched")) {
+            movies = hasSearch
+                    ? movieRepository.findByTitleContainingIgnoreCaseAndWatched(search, false)
+                    : movieRepository.findByWatched(false);
         } else {
-            movies = movieRepository.findAll();
+            filter = "all";
+            movies = hasSearch
+                    ? movieRepository.findByTitleContainingIgnoreCase(search)
+                    : movieRepository.findAll();
         }
 
         model.addAttribute("movies", movies);
         model.addAttribute("search", search);
+        model.addAttribute("filter", filter);
         model.addAttribute("movieCount", movies.size());
         return "movies";
     }
 
     @PostMapping("/movies/toggle/{id}")
-    public String toggleWatched(@org.springframework.web.bind.annotation.PathVariable Long id) {
+    public String toggleWatched(@org.springframework.web.bind.annotation.PathVariable Long id,
+                                @RequestParam(required = false, defaultValue = "all") String filter) {
         Movie movie = movieRepository.findById(id).orElseThrow();
         movie.setWatched(!movie.isWatched());
         movieRepository.save(movie);
-        return "redirect:/movies";
+        return "redirect:/movies?filter=" + filter;
     }
 
     @PostMapping("/movies/add")
