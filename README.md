@@ -1,3 +1,4 @@
+ HEAD
 # Disney Movie Watchlist: CEN4802 Midterm
 
 Spring Boot app with a Watched / Unwatched / All filter, built and shipped by CI.
@@ -23,3 +24,27 @@ Spring Boot app with a Watched / Unwatched / All filter, built and shipped by CI
     docker pull ghcr.io/ralphdevlab/disney-watchlist:latest
     docker run -d -p 8081:8080 --name disney-watchlist-ci ghcr.io/ralphdevlab/disney-watchlist:latest
 Then open http://localhost:8081/movies
+
+## Kubernetes deployment (Assignment 6)
+
+The app runs on a local Kubernetes cluster (Docker Desktop) from the CI-built image
+`ghcr.io/ralphdevlab/disney-watchlist` (pinned to commit tag `4e1edf420211d3cb2493428fa22833f72d70610a`).
+
+Manifests are in `k8s/`:
+- `deployment.yaml` - 2 replicas, image, containerPort 8080, readiness probe
+- `service.yaml` - NodePort Service (8080 -> pods, nodePort 30080)
+
+```bash
+kubectl config use-context docker-desktop
+kubectl apply -f k8s/
+kubectl get deployments
+kubectl get pods
+kubectl get service
+# Docker Desktop doesn't expose NodePorts to localhost, so use port-forward:
+kubectl port-forward service/disney-watchlist-service 9090:8080
+# open http://localhost:9090/movies
+
+kubectl scale deployment disney-watchlist --replicas=4   # management
+kubectl delete -f k8s/                                    # cleanup
+```
+ 2858c08 (Add Kubernetes manifests (Deployment + Service) and README section)
