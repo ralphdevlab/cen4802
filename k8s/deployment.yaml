@@ -5,7 +5,7 @@ metadata:
   labels:
     app: disney-watchlist
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: disney-watchlist
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: disney-watchlist
-          image: ghcr.io/ralphdevlab/disney-watchlist:4e1edf420211d3cb2493428fa22833f72d70610a
+          image: ghcr.io/ralphdevlab/disney-watchlist:e58be8a3cbab8f30d9e3bb9077bf840345e971a1
           ports:
             - containerPort: 8080
           readinessProbe:
