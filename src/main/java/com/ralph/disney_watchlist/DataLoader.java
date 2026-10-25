@@ -1,5 +1,7 @@
 package com.ralph.disney_watchlist;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -11,6 +13,8 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class DataLoader implements CommandLineRunner {
 
+    private static final Logger log = LoggerFactory.getLogger(DataLoader.class);
+
     private final MovieRepository movieRepository;
 
     public DataLoader(MovieRepository movieRepository) {
@@ -20,6 +24,7 @@ public class DataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if (movieRepository.count() == 0) {
+            log.debug("Database is empty, loading movies from movies.txt");
             ClassPathResource resource = new ClassPathResource("movies.txt");
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)
@@ -35,7 +40,9 @@ public class DataLoader implements CommandLineRunner {
             }
             reader.close();
 
-            System.out.println("Loaded " + count + " Disney movies into the database.");
+            log.info("Loaded {} Disney movies into the database.", count);
+        } else {
+            log.info("Database already has {} movies, skipping load", movieRepository.count());
         }
     }
 }
