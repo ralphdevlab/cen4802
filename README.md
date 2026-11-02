@@ -1,18 +1,19 @@
-## Logging (Assignment 7)
+## Monitoring (Assignment 8)
 
-The app uses Logback through SLF4J (included with Spring Boot). Configuration is in
-`src/main/resources/application.properties`: root level INFO, `com.ralph.disney_watchlist` at DEBUG,
-console output with timestamp, level, thread, logger and message.
+The app is monitored in Kubernetes with `kubectl top`, which needs metrics-server. Docker Desktop doesn't
+include it, so it was installed with:
 
-Levels used: DEBUG (request details), INFO (completed actions), WARN (odd input), ERROR (failed toggle).
-
-View logs in Kubernetes:
 ```bash
-kubectl logs deployment/disney-watchlist
-kubectl logs deployment/disney-watchlist | grep -E ' (WARN|ERROR) '
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+kubectl patch deployment metrics-server -n kube-system --type='json' -p='[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]'
 ```
 
-Change the level without rebuilding:
+Scripts in `monitoring/`:
+- `sample.sh [samples] [seconds]` prints timestamped CPU and memory for the app pod
+- `workload.sh` sends 60 seconds of requests with ApacheBench (`ab`) through the port-forward on port 9090
+
 ```bash
-kubectl set env deployment/disney-watchlist SPRING_APPLICATION_JSON='{"logging.level.com.ralph.disney_watchlist":"INFO"}'
+kubectl port-forward service/disney-watchlist-service 9090:8080
+./monitoring/sample.sh 6 10     # baseline
+./monitoring/workload.sh        # in another tab, while sampling again
 ```
