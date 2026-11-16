@@ -17,3 +17,18 @@ kubectl port-forward service/disney-watchlist-service 9090:8080
 ./monitoring/sample.sh 6 10     # baseline
 ./monitoring/workload.sh        # in another tab, while sampling again
 ```
+
+## Infrastructure as Code
+
+Terraform (v1.17.2, `kreuzwerker/docker` provider) in `terraform/` defines the Docker image, a `disney-net` network, and `instance_count` app containers (ports 8090+).
+
+```bash
+cd terraform
+terraform init
+terraform validate
+terraform plan
+terraform apply      # app at http://localhost:8090/movies
+terraform destroy
+```
+
+Change `instance_count` in `variables.tf` to scale out. State files are not committed.
